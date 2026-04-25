@@ -1,0 +1,38 @@
+{
+  "note": "Expected candidate profile structure for unit tests",
+  "name": "Test User",
+  "target_titles": ["Senior Software Engineer", "Lead Engineer"],
+  "years_experience": 8,
+  "skills": {
+    "technical": [
+      {"name": "Python", "years": 8, "proficiency": "expert"},
+      {"name": "AWS", "years": 5, "proficiency": "advanced"},
+      {"name": "Kubernetes", "years": 3, "proficiency": "intermediate"},
+      {"name": "PostgreSQL", "years": 4, "proficiency": "advanced"},
+      {"name": "Docker", "years": 4, "proficiency": "advanced"}
+    ],
+    "soft": [
+      {"name": "Team Leadership", "years": 4}
+    ],
+    "certifications": []
+  },
+  "industries": ["fintech", "saas"],
+  "education": [
+    {"degree": "BS Computer Science", "school": "Test University", "year": 2018}
+  ],
+  "keywords": ["microservices", "REST API", "CI/CD", "distributed systems"],
+  "experience_summary": [
+    {
+      "title": "Senior Software Engineer",
+      "company": "TestCo",
+      "years": "2020-2026",
+      "highlights": ["Built microservices on AWS", "Led Kubernetes migration"]
+    }
+  ],
+  "preferences": {
+    "seniority": ["senior", "lead"],
+    "employment_types": ["full-time", "contract"],
+    "location": "anywhere_us",
+    "arrangement": "all"
+  }
+}

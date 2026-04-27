@@ -164,22 +164,75 @@ async def _score_one_job(
     weights: Dict[str, float],
     agent: "ScoutAgent",
 ) -> Dict[str, Any]:
-    """Call local LLM to score a single job and compute weighted total."""
+    """Score a single job via local LLM, Claude API fallback, or keyword heuristic."""
     user_msg = _build_scoring_message(job, profile)
 
-    raw = await agent.local.generate(
-        prompt=f"{scoring_prompt}\n\n{user_msg}",
-        max_tokens=300,
-        agent=agent.name,
-    )
+    if agent.local is not None:
+        raw = await agent.local.generate(
+            prompt=f"{scoring_prompt}\n\n{user_msg}",
+            max_tokens=300,
+            agent=agent.name,
+        )
+        scores = _parse_score_response(raw)
+    elif agent.claude is not None:
+        # Fallback: use Claude (costs tokens but correct)
+        raw = await agent.claude.generate(
+            system_prompt=scoring_prompt,
+            user_message=user_msg,
+            max_tokens=300,
+            temperature=0.1,
+            agent=agent.name,
+        )
+        scores = _parse_score_response(raw)
+    else:
+        # Last resort: pure Python keyword heuristic (free, approximate)
+        scores = _keyword_fallback_score(job, profile)
 
-    scores = _parse_score_response(raw)
     total = round(sum(scores.get(k, 0) * w for k, w in weights.items()), 1)
 
     return {
         "total_score": total,
         "weights_used": weights,
         **scores,
+    }
+
+
+def _keyword_fallback_score(job: Dict[str, Any], profile: Dict[str, Any]) -> Dict[str, Any]:
+    """Pure-Python keyword heuristic when no LLM is available. Approximate but non-zero."""
+    jd = (job.get("job_description", "") + " " + job.get("title", "")).lower()
+    profile_skills = {s["name"].lower() for s in profile.get("skills", {}).get("technical", [])}
+    target_titles = [t.lower() for t in profile.get("target_titles", [])]
+    industries = [i.lower() for i in profile.get("industries", [])]
+
+    # core_skills_match: % of profile skills found in JD (capped at 100)
+    matched_skills = sum(1 for s in profile_skills if s in jd)
+    core = min(100, int(matched_skills / max(len(profile_skills), 1) * 100)) if profile_skills else 50
+
+    # title_seniority_alignment: does job title match target titles?
+    job_title = job.get("title", "").lower()
+    title_score = 80 if any(t in job_title or job_title in t for t in target_titles) else 40
+
+    # industry_domain_fit: industries mentioned in JD
+    industry_score = 70 if any(ind in jd for ind in industries) else 45
+
+    # years_experience_fit: profile years vs JD requirement (basic)
+    profile_years = profile.get("years_experience", 0)
+    import re as _re
+    years_match = _re.search(r"(\d+)\+?\s*years?", jd)
+    if years_match:
+        required = int(years_match.group(1))
+        years_score = 90 if profile_years >= required else max(30, int(profile_years / required * 80))
+    else:
+        years_score = 70
+
+    return {
+        "core_skills_match": core,
+        "title_seniority_alignment": title_score,
+        "industry_domain_fit": industry_score,
+        "years_experience_fit": years_score,
+        "nice_to_have_skills": 50,
+        "company_culture_signals": 50,
+        "reasoning": "Keyword heuristic (no LLM available)",
     }
 
 
@@ -306,7 +359,8 @@ def _log_scoring_feedback(feedback_path: Path, agent: "ScoutAgent") -> None:
         return
     try:
         feedback = read_json(feedback_path, agent=agent.name)
-        overrides = feedback.get("user_overrides", [])
+        # scoring_feedback.json is a list of override records written by TrackerAgent
+        overrides = feedback if isinstance(feedback, list) else []
         if overrides:
             agent.log("INFO", f"scoring_feedback.json has {len(overrides)} user override(s) — logged for future weight tuning (I-004)")
     except Exception:

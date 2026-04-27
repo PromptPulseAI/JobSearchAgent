@@ -281,13 +281,13 @@ class Orchestrator(BaseAgent):
             try:
                 writer_output = await writer.run(job, profile, fix_instructions=fix_instructions)
             except NotImplementedError:
-                self.log("WARNING", f"Writer not implemented (Commit 7) — skipping", job_id=job.get("job_id"))
+                self.log("WARNING", "Writer raised NotImplementedError — skipping", job_id=job.get("job_id"))
                 return {"output_dir": "not_implemented", "resume": None, "cover_letter": None}
 
             try:
                 review = await reviewer.run(job, writer_output, profile, review_pass=attempt + 1)
             except NotImplementedError:
-                self.log("WARNING", "Reviewer not implemented (Commit 8) — skipping review")
+                self.log("WARNING", "Reviewer raised NotImplementedError — skipping review")
                 return writer_output
 
             if review.get("passed", False) or attempt >= max_retries:

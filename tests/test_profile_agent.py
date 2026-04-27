@@ -208,7 +208,8 @@ class TestProfileAgentRun:
                             await agent.run(config=cfg)
 
     async def test_run_raises_when_resume_missing(self, agent, tmp_path):
-        cfg = {**MINIMAL_CONFIG, "paths": {**MINIMAL_CONFIG["paths"], "data_dir": str(tmp_path)}}
+        # Use tmp_path as input_dir so no real Input_Files/ interferes
+        cfg = {**MINIMAL_CONFIG, "paths": {**MINIMAL_CONFIG["paths"], "data_dir": str(tmp_path), "input_dir": str(tmp_path)}}
 
         with patch.object(agent, "load_prompt", return_value="sys"):
             with pytest.raises(ProfileAgentError, match="master_resume.docx not found"):

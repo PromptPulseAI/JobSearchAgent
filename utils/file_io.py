@@ -34,7 +34,7 @@ def read_json(
 
 def write_json(
     filepath: Union[str, Path],
-    data: dict,
+    data: Union[dict, list],
     agent: str = "system",
 ) -> None:
     """Non-atomic write for non-critical files (job_matches, fix_instructions, etc.)."""
@@ -51,7 +51,7 @@ def write_json(
 
 def atomic_write_json(
     filepath: Union[str, Path],
-    data: dict,
+    data: Union[dict, list],
     agent: str = "tracker",
 ) -> None:
     """

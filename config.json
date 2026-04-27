@@ -1,19 +1,19 @@
 {
   "_version": "1.0.0",
   "_comment": "JobSearchAgent configuration. Edit this file to customize behavior. See README.md for field descriptions.",
-
   "gdpr": {
     "data_retention_days": 90,
     "rejected_archive_after_days": 30,
     "log_retention_days": 30,
     "pii_in_logs": false,
-    "consent_acknowledged": false,
+    "consent_acknowledged": true,
     "_comment": "Set consent_acknowledged=true after reading GDPR.md"
   },
-
   "job_sources": {
     "_comment": "Add source IDs to active_sources to enable them. Each source must have a config entry below.",
-    "active_sources": ["dice"],
+    "active_sources": [
+      "dice"
+    ],
     "sources": {
       "dice": {
         "enabled": true,
@@ -26,7 +26,11 @@
         },
         "retry": {
           "max_attempts": 3,
-          "backoff_seconds": [1, 2, 4]
+          "backoff_seconds": [
+            1,
+            2,
+            4
+          ]
         }
       },
       "indeed": {
@@ -41,7 +45,11 @@
         },
         "retry": {
           "max_attempts": 3,
-          "backoff_seconds": [2, 4, 8]
+          "backoff_seconds": [
+            2,
+            4,
+            8
+          ]
         }
       },
       "linkedin": {
@@ -57,34 +65,41 @@
         },
         "retry": {
           "max_attempts": 2,
-          "backoff_seconds": [5, 10]
+          "backoff_seconds": [
+            5,
+            10
+          ]
         }
       }
     }
   },
-
   "candidate": {
-    "employment_types": ["full-time", "contract", "c2c"],
+    "employment_types": [
+      "full-time",
+      "contract",
+      "c2c"
+    ],
     "work_arrangement": "all",
     "location": "anywhere_us",
-    "seniority": ["senior", "lead"],
+    "seniority": [
+      "senior",
+      "lead"
+    ],
     "salary_threshold": null
   },
-
   "exclusions": {
     "security_clearance": true,
     "entry_level_junior": true,
     "companies_blacklist": [],
     "technologies_avoid": []
   },
-
   "scoring": {
     "weights": {
       "core_skills_match": 0.35,
-      "title_seniority_alignment": 0.20,
+      "title_seniority_alignment": 0.2,
       "industry_domain_fit": 0.15,
       "years_experience_fit": 0.15,
-      "nice_to_have_skills": 0.10,
+      "nice_to_have_skills": 0.1,
       "company_culture_signals": 0.05
     },
     "thresholds": {
@@ -92,23 +107,27 @@
       "possible_match": 50
     }
   },
-
-  "dedup_key": ["job_id", "title", "company"],
-
-  "statuses": ["Discovered", "Tailored", "Applied", "Interview", "Rejected"],
-
+  "dedup_key": [
+    "job_id",
+    "title",
+    "company"
+  ],
+  "statuses": [
+    "Discovered",
+    "Tailored",
+    "Applied",
+    "Interview",
+    "Rejected"
+  ],
   "quality": {
     "ats_target_coverage": 85,
     "max_auto_fix_retries": 2
   },
-
   "rate_limit": {
     "max_concurrent_api_calls": 3,
     "delay_between_jobs_ms": 2000
   },
-
   "follow_up_reminder_days": 7,
-
   "llm": {
     "api_model": "claude-sonnet-4-6",
     "use_local_model": true,
@@ -116,14 +135,28 @@
     "local_model_threads": 4,
     "ollama_host": "http://localhost:11434",
     "api_params": {
-      "profile_extraction": {"max_tokens": 2000, "temperature": 0.1},
-      "resume_tailoring":   {"max_tokens": 4000, "temperature": 0.3},
-      "cover_letter":       {"max_tokens": 2000, "temperature": 0.4},
-      "interview_prep":     {"max_tokens": 1500, "temperature": 0.7},
-      "quality_review":     {"max_tokens": 1500, "temperature": 0.1}
+      "profile_extraction": {
+        "max_tokens": 2000,
+        "temperature": 0.1
+      },
+      "resume_tailoring": {
+        "max_tokens": 4000,
+        "temperature": 0.3
+      },
+      "cover_letter": {
+        "max_tokens": 2000,
+        "temperature": 0.4
+      },
+      "interview_prep": {
+        "max_tokens": 1500,
+        "temperature": 0.7
+      },
+      "quality_review": {
+        "max_tokens": 1500,
+        "temperature": 0.1
+      }
     }
   },
-
   "paths": {
     "data_dir": "data",
     "output_dir": "Output",
@@ -133,7 +166,6 @@
     "templates_dir": "templates",
     "logs_dir": "data/logs"
   },
-
   "automation": {
     "headless_mode": false,
     "skip_gate1_if_no_new": false,

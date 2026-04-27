@@ -115,6 +115,34 @@ python scripts/gdpr_erasure.py
 
 ---
 
+## Dashboard
+
+A React dashboard shows real-time application status, Gate 1 approvals, and follow-up reminders.
+
+```bash
+# Terminal 1 — Python API server
+python dashboard/api_server.py
+
+# Terminal 2 — React dev server
+cd dashboard && npm install && npm run dev
+# Open http://localhost:3000
+```
+
+The dashboard polls every 5 seconds and serves data from `data/*.json`. Gate 1 approvals (headless mode) are submitted via checkboxes in Panel 3.
+
+---
+
+## Optional: GitHub Results Push
+
+Push `Output/` and summary files to a private repo after each run:
+
+```bash
+# Set RESULTS_REPO_URL in .env, then:
+python scripts/push_results.py
+```
+
+---
+
 ## CLI Reference
 
 | Flag | Description |
@@ -124,3 +152,15 @@ python scripts/gdpr_erasure.py
 | `--job-id DICE_ID` | Process a specific job ID only |
 | `--no-local-model` | Skip Ollama, use Claude API for all tasks (4GB RAM) |
 | `--skip-gate1-if-no-new` | Skip Gate 1 if no new jobs found (automated runs) |
+
+---
+
+## Tests
+
+```bash
+# All 323 tests
+python -m pytest tests/ -v
+
+# Single module
+python -m pytest tests/test_tracker_agent.py -v
+```

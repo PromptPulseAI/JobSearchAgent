@@ -38,10 +38,23 @@
   </Settings>
   <Actions Context="Author">
     <Exec>
-      <Command>python</Command>
-      <!-- Edit path below to match your installation -->
-      <Arguments>run.py --skip-gate1-if-no-new</Arguments>
+      <!-- Full path to python.exe in your venv, e.g. C:\Users\YOU\job-search-agent\.venv\Scripts\python.exe -->
+      <Command>C:\Users\YOUR_USER\job-search-agent\.venv\Scripts\python.exe</Command>
+      <Arguments>run.py --skip-gate1-if-no-new --no-local-model</Arguments>
+      <!-- Edit to your installation directory -->
       <WorkingDirectory>C:\Users\YOUR_USER\job-search-agent</WorkingDirectory>
     </Exec>
   </Actions>
 </Task>
+<!--
+  Setup instructions:
+  1. Open Task Scheduler → Action → Import Task → select this file
+  2. Replace YOUR_USER with your Windows username in Command and WorkingDirectory
+  3. Under Triggers, update StartBoundary to today's date at your preferred time
+  4. Under Security options, select "Run only when user is logged on"
+  5. Set ANTHROPIC_API_KEY in your user environment variables (System → Advanced settings)
+
+  Note (I-007): Surface Pro 4 must be awake at 8AM for the task to run.
+  StartWhenAvailable=true means it will run within 15 minutes if the machine
+  was asleep, once it wakes up.
+-->

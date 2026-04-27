@@ -57,20 +57,17 @@ def parse_args() -> argparse.Namespace:
 
 
 async def main() -> None:
-    # TODO(Commit 11): Import and run Orchestrator after it's implemented
-    #   from agents.orchestrator import Orchestrator
-    #   args = parse_args()
-    #   orchestrator = Orchestrator(
-    #       config_path="config.json",
-    #       dry_run=args.dry_run,
-    #       skip_search=args.skip_search,
-    #       target_job_id=args.job_id,
-    #       no_local_model=args.no_local_model,
-    #       skip_gate1_if_no_new=args.skip_gate1_if_no_new,
-    #   )
-    #   await orchestrator.run()
-    print("run.py: Orchestrator not yet implemented — see Commit 6")
-    print("Build status: run 'python -m pytest tests/' to verify utility layer")
+    from agents.orchestrator import Orchestrator
+    args = parse_args()
+    orc = Orchestrator(
+        config_path="config.json",
+        dry_run=args.dry_run,
+        skip_search=args.skip_search,
+        target_job_id=args.job_id,
+        no_local_model=args.no_local_model,
+        skip_gate1_if_no_new=args.skip_gate1_if_no_new,
+    )
+    await orc.run()
 
 
 if __name__ == "__main__":

@@ -45,7 +45,7 @@ All agents inherit `BaseAgent` (`agents/base_agent.py`). They communicate exclus
 
 ### Build order
 
-Commits 1–14 are complete. The full pipeline is implemented and all 354 tests pass. When adding new features, follow the same pattern: write tests first, keep the suite green.
+Commits 1–15 are complete. The full pipeline is implemented and all 354 tests pass. When adding new features, follow the same pattern: write tests first, keep the suite green.
 
 ### Pluggable job sources
 
@@ -93,8 +93,6 @@ Only `atomic_write_json()` from `utils/file_io.py` may write `application_tracke
 
 Key open issues (non-blocking):
 - **I-004** 🟢 — `scoring_feedback.json` is log-only; automated weight adjustment is future work
-- **I-005** 🟢 — Ollama model pull (~2.3GB) has no progress bar on first run
-- **I-008** 🟡 — `pyspellchecker` may flag tech terms; allowlist can be expanded
 
 See `ISSUES.md` for the full list including resolved items.
 

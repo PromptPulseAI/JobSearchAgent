@@ -296,9 +296,10 @@ def _parse_json_response(raw: str, context: str = "") -> Dict[str, Any]:
 def _generate_docx(data: Dict[str, Any], output_path: Path) -> None:
     """
     Call Node.js docx_writer.js via subprocess to generate the .docx file.
-    Falls back to writing a JSON stub if Node.js is unavailable.
+    Falls back to a JSON stub when Node.js is unavailable so the pipeline
+    can continue; caller receives a valid path even in fallback mode.
     """
-    import tempfile, os
+    import tempfile
 
     input_path = Path(tempfile.mktemp(suffix=".json"))
     try:
@@ -314,13 +315,20 @@ def _generate_docx(data: Dict[str, Any], output_path: Path) -> None:
                 f"docx_writer.js failed (exit {result.returncode}): {result.stderr[:300]}"
             )
     except FileNotFoundError:
-        # Node.js not installed — write a JSON stub so pipeline doesn't crash
+        # Node.js not installed — degrade gracefully
+        from utils.logger import run_log as _log
+        _log(
+            "WARNING",
+            "writer_agent",
+            f"Node.js not found — writing JSON stub instead of .docx: {output_path.name}. "
+            "Install Node.js and run 'npm install' to enable real .docx generation.",
+        )
         stub_path = output_path.with_suffix(".json")
         stub_path.write_text(json.dumps(data, indent=2), encoding="utf-8")
-        output_path.write_bytes(b"STUB")  # zero-byte stub so pipeline path exists; Node.js unavailable
+        output_path.write_bytes(b"")  # empty placeholder so caller path exists
     finally:
         if input_path.exists():
-            input_path.unlink()
+            input_path.unlink(missing_ok=True)
 
 
 def _build_resume_prompt(job: Dict, profile: Dict) -> str:

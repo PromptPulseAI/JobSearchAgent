@@ -17,14 +17,49 @@ except ImportError:
 
 # Common tech terms that pyspellchecker incorrectly flags as misspelled
 _TECH_ALLOWLIST = {
-    "kubernetes", "postgresql", "mysql", "mongodb", "elasticsearch",
-    "microservices", "typescript", "javascript", "graphql", "grpc",
-    "devops", "saas", "fintech", "paas", "iaas", "apis", "sdk", "sdks",
-    "oauth", "saml", "jwt", "tls", "ssl", "cicd", "dockerfile",
-    "codebase", "repo", "repos", "refactoring", "refactor", "ci", "cd",
-    "golang", "kotlin", "pytest", "fastapi", "airflow", "databricks",
-    "snowflake", "bigquery", "clickhouse", "datadog", "grafana",
-    "prometheus", "splunk", "opentelemetry", "pagerduty",
+    # Languages & runtimes
+    "golang", "kotlin", "typescript", "javascript", "nodejs",
+    "pytorch", "tensorflow", "numpy", "pandas", "pytest",
+    "fastapi", "celery", "gunicorn", "uvicorn", "django", "flask",
+    "sqlalchemy", "alembic", "pydantic", "asyncio",
+    # Cloud & infrastructure
+    "kubernetes", "kubectl", "helm", "istio", "envoy", "nginx",
+    "terraform", "ansible", "pulumi", "serverless",
+    "aws", "gcp", "azure", "vpc", "iam", "eks", "gke", "aks",
+    "fargate", "lambda", "s3", "rds", "sns", "sqs", "ecr", "ecs",
+    # Databases & data
+    "postgresql", "mysql", "mongodb", "elasticsearch", "opensearch",
+    "redis", "cassandra", "dynamodb", "cockroachdb", "clickhouse",
+    "snowflake", "bigquery", "databricks", "airflow", "dbt",
+    "kafka", "kinesis", "flink", "spark",
+    # Observability & DevOps
+    "datadog", "grafana", "prometheus", "splunk", "opentelemetry",
+    "pagerduty", "sentry", "jaeger", "zipkin", "dockerfile",
+    "cicd", "jenkins", "argocd", "spinnaker",
+    # Patterns & concepts
+    "microservices", "monorepo", "devops", "devsecops", "gitops",
+    "codebase", "repo", "repos", "refactoring", "refactor",
+    "observability", "idempotent", "idempotency", "pagination",
+    "websockets", "webhooks", "middleware",
+    "api", "apis", "sdk", "sdks", "cli", "sso", "mfa", "rbac",
+    # Security & auth
+    "oauth", "saml", "jwt", "tls", "ssl", "mtls", "oidc", "ldap",
+    "cryptography", "bcrypt",
+    # SaaS / domain terms
+    "saas", "paas", "iaas", "fintech", "healthtech", "edtech",
+    "multitenancy", "multitenant", "autoscaling", "sidecar",
+    "loadbalancer", "failover", "backoff", "throughput", "latency",
+    # ML / AI
+    "mlops", "mlflow", "kubeflow", "sagemaker", "automl",
+    "embeddings", "tokenizer", "tokenization", "llm", "llms", "rag",
+    "finetuning", "finetuned", "pretrained",
+    # Tooling often flagged
+    "linting", "linted", "eslint", "pylint", "mypy", "flake",
+    "prettier", "changelog", "semver", "mocking",
+    "serialization", "deserialization", "serialize", "deserialize",
+    "parameterized", "parametrize",
+    # Graphql / grpc / misc protocols
+    "graphql", "grpc", "protobuf", "thrift", "avro",
 }
 
 # Resume section groups: at least one from each group must appear

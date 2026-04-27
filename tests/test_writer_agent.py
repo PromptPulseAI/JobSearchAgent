@@ -223,7 +223,7 @@ class TestGenerateDocx:
         with patch("subprocess.run", side_effect=FileNotFoundError("node not found")):
             _generate_docx(data, output)
         assert output.exists()
-        assert output.read_bytes() == b"STUB"
+        assert output.read_bytes() == b""  # empty placeholder, real content in .json
         stub_json = output.with_suffix(".json")
         assert stub_json.exists()
         assert json.loads(stub_json.read_text())["type"] == "resume"

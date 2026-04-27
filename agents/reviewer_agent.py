@@ -124,8 +124,8 @@ class ReviewerAgent(BaseAgent):
             try:
                 from utils.docx_reader import read_docx_text
                 resume_text = read_docx_text(resume_path, agent=self.name)
-            except Exception:
-                pass
+            except Exception as exc:
+                self.log("WARNING", f"Could not read resume for ATS scan — coverage will be 0%: {exc}")
 
         ats = compute_coverage(resume_text, keywords)
         target = self.config.get("quality", {}).get("ats_target_coverage", 85)
@@ -155,7 +155,8 @@ class ReviewerAgent(BaseAgent):
                     "fix": "See format_validator recommendations",
                 })
             return result
-        except Exception:
+        except Exception as exc:
+            self.log("WARNING", f"Format validation failed — skipping format checks: {exc}")
             return {}
 
     def _cross_reference_skills(self, job: Dict, profile: Dict, issues: List) -> None:
@@ -213,8 +214,9 @@ class ReviewerAgent(BaseAgent):
             try:
                 from utils.docx_reader import read_docx_text
                 resume_content = read_docx_text(resume_path, agent=self.name)
-            except Exception:
-                resume_content = "(could not read resume)"
+            except Exception as exc:
+                self.log("WARNING", f"Could not read resume for Phase 2 review: {exc}")
+                resume_content = "(resume unreadable — format check skipped)"
 
         return (
             f"## Job Description\n\n{job.get('job_description', '')[:2000]}\n\n"

@@ -200,11 +200,24 @@ Status: ✅ Done | 🔄 In Progress | ⏳ Pending | ❌ Blocked
 
 ---
 
+## Commit 15: Final Polish ✅
+
+| # | Task | Status |
+|---|------|--------|
+| 15.1 | `format_validator.py` — expand `_TECH_ALLOWLIST` to 100+ terms (resolves I-008) | ✅ |
+| 15.2 | `reviewer_agent.py` — log all silent `except: pass` blocks (ATS read, format check, resume read) | ✅ |
+| 15.3 | `tracker_agent.py` — log silent `except: pass` in `_append_run_history` and `_record_scoring_feedback` | ✅ |
+| 15.4 | `scout_agent.py` — log silent `except: pass` in `_load_seen_job_ids` and `_log_scoring_feedback`; add `run_log` import | ✅ |
+| 15.5 | `writer_agent.py` — log Node.js-not-found warning; use `missing_ok=True` on temp cleanup | ✅ |
+| 15.6 | `tests/test_writer_agent.py` — update stub assertion from `b"STUB"` to `b""` | ✅ |
+| 15.7 | `ISSUES.md` / `TODO.md` / `CLAUDE.md` — close I-005 and I-008; update test count | ✅ |
+| 15.8 | Merge `claude/review-and-plan-e8Svb` → `main` | ✅ |
+
+---
+
 ## Deferred / Future
 
 - Automated scoring weight adjustment from `scoring_feedback.json` (I-004)
-- Ollama model pull progress indicator (I-005)
-- `pyspellchecker` tech term allowlist expansion (I-008)
 - Multiple additional job boards: ZipRecruiter, Glassdoor, LinkedIn (when API available)
 - Skill gap analysis and learning path recommendations
 - Email follow-up template generation

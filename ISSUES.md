@@ -8,10 +8,8 @@ Issues are categorized by severity: 🔴 Critical | 🟠 High | 🟡 Medium | �
 
 | ID | Sev | Status | Description | Blocking | Linked Commit |
 |----|-----|--------|-------------|----------|---------------|
-| I-004 | 🟢 | Open | `scoring_feedback.json` consumption logic in Scout Agent: v1 logs only; automated weight adjustment deferred | Nothing | Future |
-| I-005 | 🟢 | Open | Ollama model pull (~2.3GB) can take 10+ minutes on first run — need progress indicator in `ollama_manager.py` | Nothing | Future |
-| I-007 | 🟢 | Open | Windows Task Scheduler XML uses `--skip-gate1-if-no-new` which requires machine to be on at 8AM | Nothing | Future |
-| I-008 | 🟡 | Open | `pyspellchecker` may flag valid tech terms (e.g., "Kubernetes", "PostgreSQL") as misspelled — needs allowlist expansion | Nothing | Future |
+| I-004 | 🟢 | Open | `scoring_feedback.json` consumption: v1 logs only; automated weight adjustment deferred | Nothing | Future |
+| I-007 | 🟢 | Open | Windows Task Scheduler XML requires machine to be on at 8AM | Nothing | Future |
 
 ---
 
@@ -19,6 +17,8 @@ Issues are categorized by severity: 🔴 Critical | 🟠 High | 🟡 Medium | �
 
 | ID | Resolved In | Description | Resolution |
 |----|-------------|-------------|------------|
+| I-005 | Commit 15 | Ollama model pull had no progress bar on first run | `_pull_model_with_progress()` streams `/api/pull` and prints MB progress every 5% |
+| I-008 | Commit 15 | `pyspellchecker` flagged valid tech terms | Expanded `_TECH_ALLOWLIST` to 100+ terms across cloud, ML, DevOps, security domains |
 | I-001 | Commit 14 | Dice MCP Python invocation method not confirmed; `_call_dice_mcp()` was a placeholder | Implemented via `ClaudeClient.call_mcp_tool()` using `beta.messages.create` with `mcp_servers`; Anthropic's infra is on Dice's allowlist |
 | I-002 | Commit 12 | Dashboard needs Vite bundler + React setup | Implemented `dashboard/` with Vite + React; Python `api_server.py` provides REST API |
 | I-003 | Commit 12 | Gate 1 headless mode `pending_approval.json` polling UX | Dashboard PendingReview panel polls `/api/pending` every 5s; `POST /api/approve` accepts/rejects |

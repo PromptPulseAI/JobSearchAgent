@@ -227,8 +227,8 @@ class TrackerAgent(BaseAgent):
         if path.exists():
             try:
                 history = read_json(path, agent=self.name)
-            except Exception:
-                pass
+            except Exception as exc:
+                self.log("WARNING", f"Could not read run_history.json — starting fresh history: {exc}")
         history.append({
             "timestamp": timestamp,
             "jobs_found": run_summary.get("jobs_found", 0),
@@ -315,8 +315,8 @@ class TrackerAgent(BaseAgent):
         if path.exists():
             try:
                 feedback = read_json(path, agent=self.name)
-            except Exception:
-                pass
+            except Exception as exc:
+                self.log("WARNING", f"Could not read scoring_feedback.json — starting fresh: {exc}")
         feedback.append({
             "job_id": job_id,
             "score": score,

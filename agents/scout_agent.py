@@ -14,6 +14,7 @@ from agents.base_agent import BaseAgent
 from sources.registry import SourceRegistry
 from utils.exceptions import AllSourcesFailedError, JobSourceError, ScoutAgentError
 from utils.file_io import read_json, write_json
+from utils.logger import run_log
 
 
 class ScoutAgent(BaseAgent):
@@ -321,7 +322,7 @@ def _apply_freshness_boost(job: Dict[str, Any]) -> Dict[str, Any]:
             job["score"] = min(100, job.get("score", 0) + boost)
             job["freshness_boost"] = boost
     except (ValueError, TypeError):
-        pass
+        pass  # unparseable date — no boost applied, job returned as-is
 
     return job
 
@@ -333,7 +334,8 @@ def _load_seen_job_ids(tracker_path: Path) -> Set[str]:
     try:
         tracker = read_json(tracker_path, agent="scout_agent")
         return {entry.get("job_id") for entry in tracker.get("jobs", []) if entry.get("job_id")}
-    except Exception:
+    except Exception as exc:
+        run_log("WARNING", "scout_agent", f"Could not read tracker for dedup — all jobs treated as new: {exc}")
         return set()
 
 
@@ -360,9 +362,8 @@ def _log_scoring_feedback(feedback_path: Path, agent: "ScoutAgent") -> None:
         return
     try:
         feedback = read_json(feedback_path, agent=agent.name)
-        # scoring_feedback.json is a list of override records written by TrackerAgent
         overrides = feedback if isinstance(feedback, list) else []
         if overrides:
-            agent.log("INFO", f"scoring_feedback.json has {len(overrides)} user override(s) — logged for future weight tuning (I-004)")
-    except Exception:
-        pass
+            agent.log("INFO", f"scoring_feedback.json has {len(overrides)} user override(s) — logged for future weight tuning")
+    except Exception as exc:
+        agent.log("WARNING", f"Could not read scoring_feedback.json: {exc}")

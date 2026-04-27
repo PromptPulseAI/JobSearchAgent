@@ -93,12 +93,13 @@ class ScoutAgent(BaseAgent):
         failed: List[str] = []
 
         for source in sources:
+            source.claude = self.claude  # inject for MCP-based sources (e.g. Dice)
             try:
                 jobs = await source.search_jobs(profile, self.config)
                 all_jobs.extend(jobs)
                 self.log("INFO", f"{source.source_name}: {len(jobs)} jobs found")
             except NotImplementedError:
-                self.log("WARNING", f"{source.source_name}: not yet implemented (see ISSUES.md I-001)")
+                self.log("WARNING", f"{source.source_name}: not yet implemented")
                 failed.append(source.source_id)
             except JobSourceError as exc:
                 self.log("WARNING", f"{source.source_name} failed: {exc}")

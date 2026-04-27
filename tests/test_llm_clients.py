@@ -123,6 +123,93 @@ class TestClaudeClientGenerate:
         assert limited_client._semaphore._value == 2
 
 
+# ── ClaudeClient.call_mcp_tool tests ─────────────────────────────────────────
+
+class TestClaudeClientCallMcpTool:
+    @pytest.fixture
+    def client(self):
+        from utils.api_client import ClaudeClient
+        return ClaudeClient(api_key="test-key", max_concurrent=3, delay=0.0)
+
+    def _make_mcp_response(self, content, is_error=False):
+        """Build a mock beta messages response with an mcp_tool_result block."""
+        tool_result = MagicMock()
+        tool_result.type = "mcp_tool_result"
+        tool_result.is_error = is_error
+        tool_result.tool_use_id = "tu_001"
+        tool_result.content = content
+        response = MagicMock()
+        response.content = [tool_result]
+        return response
+
+    async def test_returns_list_from_mcp_tool_result(self, client):
+        import json
+        jobs = [{"id": "123", "title": "Engineer"}]
+        mock_response = self._make_mcp_response(json.dumps(jobs))
+
+        with patch.object(client._client.beta.messages, "create", new=AsyncMock(return_value=mock_response)):
+            result = await client.call_mcp_tool(
+                server_url="https://mcp.dice.com/mcp",
+                server_name="dice",
+                prompt="Search for Python jobs",
+                agent="test",
+            )
+
+        assert result == jobs
+
+    async def test_unwraps_text_block_list_content(self, client):
+        import json
+        jobs = [{"id": "456"}]
+        text_block = MagicMock()
+        text_block.text = json.dumps(jobs)
+        mock_response = self._make_mcp_response([text_block])
+
+        with patch.object(client._client.beta.messages, "create", new=AsyncMock(return_value=mock_response)):
+            result = await client.call_mcp_tool("https://mcp.dice.com/mcp", "dice", "prompt")
+
+        assert result == jobs
+
+    async def test_raises_api_error_on_mcp_tool_error(self, client):
+        from utils.exceptions import APIError
+        mock_response = self._make_mcp_response("Tool failed: 500", is_error=True)
+
+        with patch.object(client._client.beta.messages, "create", new=AsyncMock(return_value=mock_response)):
+            with pytest.raises(APIError, match="MCP tool returned error"):
+                await client.call_mcp_tool("https://mcp.dice.com/mcp", "dice", "prompt")
+
+    async def test_returns_empty_list_when_no_tool_result(self, client):
+        text_block = MagicMock()
+        text_block.type = "text"
+        text_block.text = "No tool was called"
+        mock_response = MagicMock()
+        mock_response.content = [text_block]
+
+        with patch.object(client._client.beta.messages, "create", new=AsyncMock(return_value=mock_response)):
+            result = await client.call_mcp_tool("https://mcp.dice.com/mcp", "dice", "prompt")
+
+        assert result == []
+
+    async def test_calls_beta_messages_with_mcp_servers(self, client):
+        import json
+        mock_response = self._make_mcp_response(json.dumps([]))
+
+        with patch.object(client._client.beta.messages, "create", new=AsyncMock(return_value=mock_response)) as mock_create:
+            await client.call_mcp_tool("https://mcp.dice.com/mcp", "dice", "prompt", agent="scout")
+
+        call_kwargs = mock_create.call_args[1]
+        assert call_kwargs["mcp_servers"] == [{"name": "dice", "type": "url", "url": "https://mcp.dice.com/mcp"}]
+        assert "mcp-client-2025-04-04" in call_kwargs["betas"]
+
+    async def test_raises_api_error_on_status_error(self, client):
+        from utils.exceptions import APIError
+        import anthropic
+
+        err = anthropic.APIStatusError("forbidden", response=MagicMock(status_code=403), body={})
+        with patch.object(client._client.beta.messages, "create", new=AsyncMock(side_effect=err)):
+            with pytest.raises(APIError):
+                await client.call_mcp_tool("https://mcp.dice.com/mcp", "dice", "prompt")
+
+
 # ── LocalLLM tests ────────────────────────────────────────────────────────────
 
 class TestLocalLLM:

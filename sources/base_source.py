@@ -22,6 +22,11 @@ class BaseJobSource(ABC):
     source_name: str      # Human-readable, e.g. "Dice"
     requires_auth: bool   # Whether an API key env var is required
 
+    # Injected by ScoutAgent before search_jobs() is called.
+    # Sources that call the Claude API (e.g. DiceSource via MCP) use this;
+    # plain HTTP sources may leave it None.
+    claude: Optional[Any] = None
+
     @abstractmethod
     async def search_jobs(
         self,

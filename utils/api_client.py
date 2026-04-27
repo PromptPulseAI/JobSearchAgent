@@ -4,7 +4,8 @@ Features: prompt caching, asyncio rate limiting, automatic retry, token logging.
 Uses asyncio.get_running_loop() (not deprecated get_event_loop()).
 """
 import asyncio
-from typing import Optional
+import json
+from typing import Any, List, Optional
 
 import anthropic
 
@@ -141,6 +142,74 @@ class ClaudeClient:
                 )
 
         raise APIError("Exhausted retries", agent=agent, job_id=job_id)
+
+
+    async def call_mcp_tool(
+        self,
+        server_url: str,
+        server_name: str,
+        prompt: str,
+        agent: str = "unknown",
+    ) -> Any:
+        """
+        Call a remote MCP tool via Claude as a proxy.
+
+        Anthropic's infrastructure connects to the MCP server, so
+        host-allowlisted endpoints (e.g. mcp.dice.com) work correctly.
+        Returns the raw parsed content from the first non-error mcp_tool_result
+        block, or an empty list if no tool result was produced.
+        """
+        async with self._semaphore:
+            loop = asyncio.get_running_loop()
+            elapsed = loop.time() - self._last_call
+            if elapsed < self._delay:
+                await asyncio.sleep(self._delay - elapsed)
+
+            try:
+                response = await self._client.beta.messages.create(
+                    model=MODEL,
+                    max_tokens=4096,
+                    mcp_servers=[{
+                        "name": server_name,
+                        "type": "url",
+                        "url": server_url,
+                    }],
+                    messages=[{"role": "user", "content": prompt}],
+                    betas=["mcp-client-2025-04-04"],
+                )
+                self._last_call = loop.time()
+            except anthropic.APIStatusError as exc:
+                raise APIError(
+                    f"MCP API error {exc.status_code}: {exc.message}",
+                    status_code=exc.status_code,
+                    agent=agent,
+                )
+
+            # Extract the first successful mcp_tool_result block
+            for block in response.content:
+                if getattr(block, "type", None) == "mcp_tool_result":
+                    if block.is_error:
+                        raise APIError(
+                            f"MCP tool returned error: {block.content}",
+                            agent=agent,
+                        )
+                    content = block.content
+                    if isinstance(content, str):
+                        return json.loads(content)
+                    # List[BetaTextBlock]
+                    for item in content:
+                        if hasattr(item, "text"):
+                            return json.loads(item.text)
+
+            # Fallback: Claude described the results as text — parse last text block
+            for block in reversed(response.content):
+                if getattr(block, "type", None) == "text":
+                    try:
+                        return json.loads(block.text)
+                    except json.JSONDecodeError:
+                        pass
+
+            return []
 
 
 def _parse_retry_after(exc, default: float) -> float:

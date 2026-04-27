@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-16"?>
+<!--
+  Windows Task Scheduler config for daily JobSearchAgent runs.
+  Import via: Task Scheduler → Action → Import Task
+  Edit WorkingDirectory to match your installation path.
+-->
+<Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+  <RegistrationInfo>
+    <Description>JobSearchAgent — Daily job search and resume tailoring run</Description>
+    <URI>\JobSearchAgent\DailyRun</URI>
+  </RegistrationInfo>
+  <Triggers>
+    <CalendarTrigger>
+      <StartBoundary>2026-04-25T08:00:00</StartBoundary>
+      <Enabled>true</Enabled>
+      <ScheduleByDay>
+        <DaysInterval>1</DaysInterval>
+      </ScheduleByDay>
+    </CalendarTrigger>
+  </Triggers>
+  <Principals>
+    <Principal id="Author">
+      <LogonType>InteractiveToken</LogonType>
+      <RunLevel>LeastPrivilege</RunLevel>
+    </Principal>
+  </Principals>
+  <Settings>
+    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
+    <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
+    <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>
+    <AllowHardTerminate>true</AllowHardTerminate>
+    <StartWhenAvailable>true</StartWhenAvailable>
+    <RunOnlyIfNetworkAvailable>true</RunOnlyIfNetworkAvailable>
+    <ExecutionTimeLimit>PT30M</ExecutionTimeLimit>
+    <Enabled>true</Enabled>
+    <Hidden>false</Hidden>
+    <Priority>7</Priority>
+  </Settings>
+  <Actions Context="Author">
+    <Exec>
+      <!-- Full path to python.exe in your venv, e.g. C:\Users\YOU\job-search-agent\.venv\Scripts\python.exe -->
+      <Command>C:\Users\YOUR_USER\job-search-agent\.venv\Scripts\python.exe</Command>
+      <Arguments>run.py --skip-gate1-if-no-new --no-local-model</Arguments>
+      <!-- Edit to your installation directory -->
+      <WorkingDirectory>C:\Users\YOUR_USER\job-search-agent</WorkingDirectory>
+    </Exec>
+  </Actions>
+</Task>
+<!--
+  Setup instructions:
+  1. Open Task Scheduler → Action → Import Task → select this file
+  2. Replace YOUR_USER with your Windows username in Command and WorkingDirectory
+  3. Under Triggers, update StartBoundary to today's date at your preferred time
+  4. Under Security options, select "Run only when user is logged on"
+  5. Set ANTHROPIC_API_KEY in your user environment variables (System → Advanced settings)
+
+  Note (I-007): Surface Pro 4 must be awake at 8AM for the task to run.
+  StartWhenAvailable=true means it will run within 15 minutes if the machine
+  was asleep, once it wakes up.
+-->

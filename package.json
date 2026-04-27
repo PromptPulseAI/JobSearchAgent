@@ -1,0 +1,15 @@
+{
+  "name": "job-search-docx",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Node.js docx generation utility for JobSearchAgent",
+  "scripts": {
+    "generate-docx": "node utils/docx_writer.js"
+  },
+  "dependencies": {
+    "docx": "^9.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

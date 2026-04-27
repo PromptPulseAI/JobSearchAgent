@@ -1,0 +1,63 @@
+# ── Python ───────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+.python-version
+
+# ── Environment / secrets (NEVER commit) ────────────────────────────────────
+.env
+.env.local
+
+# ── Personal data — GDPR sensitive (see GDPR.md) ────────────────────────────
+data/candidate_profile.json
+data/application_tracker.json
+data/application_tracker.backup.json
+data/job_matches.json
+data/run_history.json
+data/scoring_feedback.json
+data/fix_instructions.json
+data/pending_approval.json
+data/gdpr_erasure_certificate.json
+data/logs/
+master_summary.md
+
+# ── Input files (personal resumes/skills — NOT tracked) ─────────────────────
+Input_Files/*.docx
+!Input_Files/.gitkeep
+Skills/*.docx
+!Skills/.gitkeep
+
+# ── Generated output (personal — NOT tracked) ────────────────────────────────
+Output/Best_Match/*/
+Output/Possible_Match/*/
+
+# ── Binary templates (tracked as LFS or excluded) ────────────────────────────
+templates/*.docx
+
+# ── Node.js ──────────────────────────────────────────────────────────────────
+node_modules/
+dashboard/node_modules/
+dashboard/dist/
+dashboard/.vite/
+
+# ── OS ───────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ── IDE ──────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── Test artifacts ───────────────────────────────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/

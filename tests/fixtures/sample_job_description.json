@@ -1,0 +1,9 @@
+{
+  "job_id": "dice_test_001",
+  "title": "Senior Software Engineer",
+  "company": "Acme Corp",
+  "description": "We are looking for a Senior Software Engineer to join our platform team.\n\nRequirements:\n- 5+ years of Python experience\n- Strong knowledge of AWS and Docker\n- Experience with PostgreSQL and Redis\n- REST API design and microservices architecture\n- CI/CD pipeline experience with Jenkins or GitHub Actions\n- Experience with Kubernetes\n\nPreferred:\n- Knowledge of GraphQL\n- Familiarity with Terraform\n- Experience with Kafka\n\nAbout us:\nAcme Corp is a Series C fintech startup building the future of payments.",
+  "location": "Remote",
+  "date_posted": "2026-04-23",
+  "employment_type": "full-time"
+}

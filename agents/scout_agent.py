@@ -99,7 +99,7 @@ class ScoutAgent(BaseAgent):
                 all_jobs.extend(jobs)
                 self.log("INFO", f"{source.source_name}: {len(jobs)} jobs found")
             except NotImplementedError:
-                self.log("WARNING", f"{source.source_name}: not yet implemented")
+                self.log("WARNING", f"{source.source_name}: search_jobs not implemented — skipping")
                 failed.append(source.source_id)
             except JobSourceError as exc:
                 self.log("WARNING", f"{source.source_name} failed: {exc}")

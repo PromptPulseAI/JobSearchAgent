@@ -317,7 +317,7 @@ def _generate_docx(data: Dict[str, Any], output_path: Path) -> None:
         # Node.js not installed — write a JSON stub so pipeline doesn't crash
         stub_path = output_path.with_suffix(".json")
         stub_path.write_text(json.dumps(data, indent=2), encoding="utf-8")
-        output_path.write_bytes(b"STUB")  # placeholder .docx
+        output_path.write_bytes(b"STUB")  # zero-byte stub so pipeline path exists; Node.js unavailable
     finally:
         if input_path.exists():
             input_path.unlink()

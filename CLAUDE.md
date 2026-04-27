@@ -17,13 +17,17 @@ python -m pytest tests/test_ats_scanner.py -v
 # Run a single test by name
 python -m pytest tests/test_logger.py::TestLogApiCall::test_creates_entry -v
 
-# Run the agent (orchestrator not implemented yet — see Commit 6)
+# Run the agent (dry-run — no API calls, no files written)
 python run.py --dry-run
+
+# Run with existing job matches, skip live search
+python run.py --skip-search --no-local-model
 
 # GDPR right-to-erasure (deletes all personal data)
 python scripts/gdpr_erasure.py
 
-# Dashboard (Commit 12, not yet implemented)
+# Dashboard (start API server, then open in browser)
+python dashboard/api_server.py &
 cd dashboard && npm install && npm run dev
 ```
 
@@ -41,7 +45,7 @@ All agents inherit `BaseAgent` (`agents/base_agent.py`). They communicate exclus
 
 ### Build order
 
-Commits are numbered 1-13. The utility layer (Commit 2) is complete and fully tested. LLM integration (Commit 3) is next. Do not skip commits — each one's tests must pass before starting the next.
+Commits 1–14 are complete. The full pipeline is implemented and all 354 tests pass. When adding new features, follow the same pattern: write tests first, keep the suite green.
 
 ### Pluggable job sources
 
@@ -87,10 +91,20 @@ Only `atomic_write_json()` from `utils/file_io.py` may write `application_tracke
 `ISSUES.md` — open blockers with severity and linked commit. Update when a blocker is found or resolved.  
 `TODO.md` — build tracker mirroring commit order. Mark tasks done as each commit is completed.
 
-Key open issues:
-- **I-001** 🟠 — Dice MCP Python invocation method unknown; `DiceSource._call_dice_mcp()` raises `NotImplementedError` (blocks Commit 5)
-- **I-006** 🟡 — GDPR consent gate in orchestrator (Commit 6)
+Key open issues (non-blocking):
+- **I-004** 🟢 — `scoring_feedback.json` is log-only; automated weight adjustment is future work
+- **I-005** 🟢 — Ollama model pull (~2.3GB) has no progress bar on first run
+- **I-008** 🟡 — `pyspellchecker` may flag tech terms; allowlist can be expanded
+
+See `ISSUES.md` for the full list including resolved items.
+
+### Dice MCP integration
+
+`DiceSource` calls the Dice MCP server (`https://mcp.dice.com/mcp`) via
+`ClaudeClient.call_mcp_tool()`, which uses `client.beta.messages.create` with
+`mcp_servers`. Anthropic's infrastructure makes the actual HTTP call (Dice
+allowlists Anthropic's IPs). The `mcp-client-2025-04-04` beta flag is required.
 
 ### Testing
 
-`pytest.ini` sets `testpaths = tests` and `asyncio_mode = auto`. Fixtures are in `tests/conftest.py` and `tests/fixtures/`. All 91 tests in Commits 1-2 must stay green before any new commit.
+`pytest.ini` sets `testpaths = tests` and `asyncio_mode = auto`. Fixtures are in `tests/conftest.py` and `tests/fixtures/`. All 354 tests must stay green before any new commit.

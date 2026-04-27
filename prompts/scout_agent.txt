@@ -1,0 +1,2 @@
+# TODO: Fill in system prompt in the corresponding commit.
+# See job_search_agent_spec_v5.md Section 2 for the agent's system_prompt definition.

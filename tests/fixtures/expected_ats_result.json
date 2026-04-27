@@ -1,0 +1,6 @@
+{
+  "note": "Expected ATS result for sample_job_description.json vs a resume that contains Python, AWS, PostgreSQL, REST, CI/CD, Kubernetes.",
+  "expected_required_keywords": ["python", "aws", "docker", "postgresql", "redis", "rest", "microservices", "ci/cd", "kubernetes"],
+  "expected_preferred_keywords": ["graphql", "terraform", "kafka"],
+  "expected_min_coverage_with_good_resume": 60.0
+}
